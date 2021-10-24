@@ -1,19 +1,24 @@
 package com.vs4vijay.app.controllers;
 
 import com.vs4vijay.app.core.AppMapper;
-import com.vs4vijay.app.models.User;
-import com.vs4vijay.app.services.UserService;
 import com.vs4vijay.app.dtos.CreateUserDTO;
+import com.vs4vijay.app.dtos.ResponseDTO;
 import com.vs4vijay.app.dtos.UserDTO;
 import com.vs4vijay.app.errors.ResourceNotFoundException;
+import com.vs4vijay.app.models.User;
+import com.vs4vijay.app.services.UserService;
+import com.vs4vijay.app.utils.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -29,10 +34,17 @@ public class UserController {
     private AppMapper mapper;
 
     @GetMapping("")
-    public List<UserDTO> getAll() {
-        List<User> users = userService.getAll();
-        List<UserDTO> userDTOs = mapper.toUserDTOs(users);
-        return userDTOs;
+    public ResponseDTO getAll(Pageable pageRequest) {
+        Page<User> userPage = userService.getAll(pageRequest);
+        List<User> users = userPage.getContent();
+        Map metadata = CommonUtil.buildMetadataFromPage(userPage);
+        ResponseDTO responseDTO =
+                ResponseDTO
+                        .builder()
+                        .data(mapper.toUserDTOs(users))
+                        .metadata(metadata)
+                        .build();
+        return responseDTO;
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -47,11 +59,11 @@ public class UserController {
     @GetMapping("/{id}")
     public UserDTO getById(@PathVariable("id") String id) {
         Optional<User> byId = userService.getById(id);
-        if(byId.isPresent()) {
+        if (byId.isPresent()) {
             UserDTO userDTO = mapper.toUserDTO(byId.get());
             return userDTO;
         } else {
-            throw new ResourceNotFoundException(id.toString());
+            throw new ResourceNotFoundException(id);
         }
     }
 
