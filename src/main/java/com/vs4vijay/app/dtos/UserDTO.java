@@ -3,11 +3,10 @@ package com.vs4vijay.app.dtos;
 import lombok.Data;
 
 import java.util.Date;
-import java.util.UUID;
 
 @Data
 public class UserDTO {
-    UUID id;
+    String id;
 
     String name;
 

@@ -1,14 +1,13 @@
 package com.vs4vijay.app.services;
 
+import com.vs4vijay.app.errors.ResourceNotFoundException;
 import com.vs4vijay.app.models.User;
 import com.vs4vijay.app.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service()
 public class UserService {
@@ -20,7 +19,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Optional<User> getById(UUID id) {
+    public Optional<User> getById(String id) {
         return userRepository.findById(id);
     }
 
@@ -28,14 +27,14 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User update(UUID id, User user) {
-        userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException());
+    public User update(String id, User user) {
+        userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
         user.setId(id);
         return userRepository.save(user);
     }
 
-    public void delete(UUID id) {
-        userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException());
+    public void delete(String id) {
+        userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
         userRepository.deleteById(id);
     }
 }

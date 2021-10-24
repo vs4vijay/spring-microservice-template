@@ -7,6 +7,7 @@
 - Java
 - Spring 5 with Spring Boot 2
 - H2 Database
+- JPA / Hibernate
 - Lombok
 - Mapstruct
 

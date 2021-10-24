@@ -15,12 +15,12 @@ import java.util.UUID;
 @Data
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseModel {
-    @Id
-    @GeneratedValue(generator = "UUID")
-    UUID id;
 
-    @Column()
-    Boolean isActive;
+    public static final String SOFT_DELETE_CLAUSE = "is_deleted = false";
+
+    @Id
+//    @GeneratedValue(generator = "UUID")
+    String id;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -37,4 +37,16 @@ public abstract class BaseModel {
     @LastModifiedBy
     @Column()
     String updatedBy;
+
+    @Column(updatable = false)
+    Boolean isDeleted;
+
+    @PrePersist
+    private void onBaseModelCreate() {
+        if (id == null) {
+            // TODO: Find a better way to use String data type while storing UUID
+            id = UUID.randomUUID().toString();
+        }
+        isDeleted = false;
+    }
 }

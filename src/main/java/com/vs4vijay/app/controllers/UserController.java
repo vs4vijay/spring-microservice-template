@@ -15,11 +15,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @Validated
-@RequestMapping("/users")
+@RequestMapping("/api/v1/users")
 @RestController()
 public class UserController {
 
@@ -46,7 +45,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public UserDTO getById(@PathVariable("id") UUID id) {
+    public UserDTO getById(@PathVariable("id") String id) {
         Optional<User> byId = userService.getById(id);
         if(byId.isPresent()) {
             UserDTO userDTO = mapper.toUserDTO(byId.get());
@@ -57,7 +56,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public UserDTO update(@PathVariable("id") UUID id, @RequestBody CreateUserDTO userDTO) {
+    public UserDTO update(@PathVariable("id") String id, @RequestBody CreateUserDTO userDTO) {
         // TODO: Check if valid user
         User user = mapper.toUser(userDTO);
         // TODO: Partial Update
@@ -68,7 +67,7 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable("id") UUID id) {
+    public void delete(@PathVariable("id") String id) {
         userService.delete(id);
     }
 }
